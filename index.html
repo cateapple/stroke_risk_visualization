@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Stroke risk factor visualizations</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="https:d3js.org/d3.v6.min.js"></script>
+    </head>
+    <body>
+        <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
+        <script>
+            d3.json("stroke-data.json").then((data) => {
+                console.log(data);
+                let life_factors = d3.select("body").append("svg")
+                                        .attr("width", 800)
+                                        .attr("height", 500)
+
+                let health_factors = d3.select("body").append("svg")
+                                            .attr("width", 800)
+                                            .attr("height", 500)
+                const margins = {"top": 20, "right": 20, "bottom": 20, "left": 20}
+            });
+        </script>
+    </body>
+</html>
