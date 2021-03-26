@@ -7,24 +7,159 @@
     </head>
     <body>
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
+        <p>
+            <svg id="lifefactors" height="800" width="800">
+                
+            </svg>
+        
+            <script id="lifefactors">
+        
+            const svg = d3.select("svg#lifefactors");
+                        
+            const width = svg.attr("width");
+            const height = svg.attr("height");
+            const margin = {top: 0, right: 0, bottom: 0, left:0};
+        
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+        
+            
+        
+            let annotated = svg.append("g").attr("id","price");
+                            
+            let chartArea = svg.append("g").attr("id","points")
+                            .attr("transform","translate("+margin.left+","+margin.top+")");
+
+            var lifedata;
+            d3.json("life_factors_new.json", d3.autoType).then((data) => {
+                lifedata = data
+                    console.log(lifedata)
+                
+                
+
+                //Make bar scales
+                // x is stroke or not - 0 or 1 
+                // const xaxisExtent = d3.extent(lifedata, d => d["stroke"]);
+                const xScale = d3.scaleLinear().domain([0, 5]).range([0, chartWidth]);
+
+                //y scale is the number of bars we're making evenly distributed over the area of the chart
+                const yScale = d3.scaleBand().domain(lifedata.map(function(d) {return d.Category;})).range([chartHeight, 0])
+            
+
+                //conditional color scales - 3 main categories - 
+                // const colScale = d3.interpolate(colorGiver(category))
+
+                console.log(lifedata.Category)
+
+                function colorGiver(category){
+                    // if it is a residence type, set color based on type. index first letter and last letter to decide
+                    if(String(category).charAt(0) == "R"){
+                        if(String(category).charAt(String(category).length-1) == "n"){
+                            return d3.interpolatePurples(0.75)
+                        }
+                        else{
+                            return d3.interpolatePurples(1)
+                        }
+                        
+                    }
+                    // if it is ever married, set the kinds and their colors. index first letter and last letter to decide
+                    if (String(category).charAt(0) == "e"){
+                        if(String(category).charAt(String(category).length-1) == "o"){
+                            return d3.interpolateReds(0.75)
+                        }
+                        else{
+                            return d3.interpolateReds(1)
+                        }
+
+                    }
+                    //if it is a work type, there are 5 different kinds so set the blue based on which one it is. Indexing on first and last letter to figure out which type
+                    if (String(category).charAt(0) == "w"){
+
+                        if(String(category).charAt(String(category).length-1) == "e"){
+                            return d3.interpolateBlues(1)
+                        }
+
+                        if(String(category).charAt(String(category).length-1) == "d"){
+                            return d3.interpolateBlues(0.8)
+                        }
+
+                        if(String(category).charAt(String(category).length-1) == "b"){
+                            return d3.interpolateBlues(0.6)
+                        }
+
+                        if(String(category).charAt(String(category).length-1) == "n"){
+                            return d3.interpolateBlues(0.4)
+                        }
+                        else{
+                            return d3.interpolateBlues(0.2)
+                        }
+                    }
+
+                }
+
+                //axes append
+                let leftAxis = d3.axisLeft(yScale)
+                let bottomAxis = d3.axisBottom(xScale)
+
+                svg.append("g").call(leftAxis)
+                svg.append("g").call(bottomAxis)
+
+                //append to chart
+                let rects = svg.selectAll("rect").data(lifedata)
+                    .enter()
+                    .append("rect")
+                    .attr("x", xScale(0))
+                    .attr("y", function(d) { return yScale(d.Category); })
+                    .attr("width", function(d) { return xScale(d.Percentage); })
+                    .attr("height", yScale.bandwidth() )
+                    .attr("fill", function(d) {return colorGiver(d.Category);})
+            });
+            
+            
+            
+            //xScale and yScale
+            
+        
+            // Show Circles function
+             
+            </script>
+        </p>
+
+
+
+
+
+
+
+
+
         <script>
             const margins = {"top": 50, "right": 20, "bottom": 20, "left": 20}
             //graph area for life factors graph
             let life_factors = d3.select("body").append("svg")
                                     .attr("width", 800)
                                     .attr("height", 500);
+            
+        // get life factors info
+
+
+
+
+
+
+
                 
-            //graph area for health factors graph
-            let health_factors = d3.select("body").append("svg")
-                                        .attr("width", 800)
-                                        .attr("height", 500);
+            // //graph area for health factors graph
+            // let health_factors = d3.select("body").append("svg")
+            //                             .attr("width", 800)
+            //                             .attr("height", 500);
         
-            d3.json("life_factors.json").then((data) => {
-                console.log(data);
+            // d3.json("life_factors.json").then((data) => {
+            //     console.log(data);
 
                 //make scales and graph for life factors here
                 
-            });
+            // });
         </script>
     </body>
 </html>
