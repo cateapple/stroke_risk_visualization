@@ -8,16 +8,22 @@
     <body>
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
         <script>
-            d3.json("stroke-data.json").then((data) => {
-                console.log(data);
-                let life_factors = d3.select("body").append("svg")
+            const margins = {"top": 50, "right": 20, "bottom": 20, "left": 20}
+            //graph area for life factors graph
+            let life_factors = d3.select("body").append("svg")
+                                    .attr("width", 800)
+                                    .attr("height", 500);
+                
+            //graph area for health factors graph
+            let health_factors = d3.select("body").append("svg")
                                         .attr("width", 800)
-                                        .attr("height", 500)
+                                        .attr("height", 500);
+        
+            d3.json("life_factors.json").then((data) => {
+                console.log(data);
 
-                let health_factors = d3.select("body").append("svg")
-                                            .attr("width", 800)
-                                            .attr("height", 500)
-                const margins = {"top": 20, "right": 20, "bottom": 20, "left": 20}
+                //make scales and graph for life factors here
+                
             });
         </script>
     </body>
