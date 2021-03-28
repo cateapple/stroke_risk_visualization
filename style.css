@@ -5,3 +5,11 @@
 .gridlines .domain{
   stroke: none;
 }
+
+.axis{
+  font-size: 10px;
+}
+
+text{
+    font-family: sans-serif;
+}
