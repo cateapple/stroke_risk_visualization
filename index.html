@@ -8,48 +8,41 @@
     <body>
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
         <p>
-            <svg id="lifefactors" height="800" width="800">
-                
+            <svg id="lifefactors" height="800" width="1000">
+
             </svg>
-        
+
             <script id="lifefactors">
-        
+
             const svg = d3.select("svg#lifefactors");
-                        
+
             const width = svg.attr("width");
             const height = svg.attr("height");
-            const margin = {top: 0, right: 0, bottom: 0, left:0};
-        
-            const chartWidth = width - margin.left - margin.right;
-            const chartHeight = height - margin.top - margin.bottom;
-        
-            
-        
+            const margins = {"top": 50, "right": 20, "bottom": 20, "left": 150};
+
+            const chartWidth = width - margins.left - margins.right;
+            const chartHeight = height - margins.top - margins.bottom;
+
             let annotated = svg.append("g").attr("id","price");
-                            
+
             let chartArea = svg.append("g").attr("id","points")
-                            .attr("transform","translate("+margin.left+","+margin.top+")");
+                            .attr("transform","translate("+margins.left+","+margins.top+")");
 
             var lifedata;
             d3.json("life_factors_new.json", d3.autoType).then((data) => {
-                lifedata = data
-                    console.log(lifedata)
-                
-                
+                lifedata = data;
 
                 //Make bar scales
-                // x is stroke or not - 0 or 1 
+                // x is stroke or not - 0 or 1
                 // const xaxisExtent = d3.extent(lifedata, d => d["stroke"]);
                 const xScale = d3.scaleLinear().domain([0, 5]).range([0, chartWidth]);
 
                 //y scale is the number of bars we're making evenly distributed over the area of the chart
-                const yScale = d3.scaleBand().domain(lifedata.map(function(d) {return d.Category;})).range([chartHeight, 0])
-            
+                const yScale = d3.scaleBand().domain(lifedata.map(function(d) {console.log(d.Category);   return d.Category;})).range([chartHeight, 0])
 
-                //conditional color scales - 3 main categories - 
+
+                //conditional color scales - 3 main categories -
                 // const colScale = d3.interpolate(colorGiver(category))
-
-                console.log(lifedata.Category)
 
                 function colorGiver(category){
                     // if it is a residence type, set color based on type. index first letter and last letter to decide
@@ -60,7 +53,7 @@
                         else{
                             return d3.interpolatePurples(1)
                         }
-                        
+
                     }
                     // if it is ever married, set the kinds and their colors. index first letter and last letter to decide
                     if (String(category).charAt(0) == "e"){
@@ -98,68 +91,45 @@
                 }
 
                 //axes append
-                let leftAxis = d3.axisLeft(yScale)
-                let bottomAxis = d3.axisBottom(xScale)
+                let leftAxis = d3.axisLeft(yScale);
+                annotated.append("g").attr("class", "y axis")
+                                        .attr("transform", "translate("+(margins.left)+","+(margins.top)+")")
+                                        .call(leftAxis);
 
-                svg.append("g").call(leftAxis)
-                svg.append("g").call(bottomAxis)
+                let bottomAxis = d3.axisBottom(xScale);
+                let bottomGridLines = d3.axisBottom(xScale).tickFormat("").tickSize(-chartHeight);
+                annotated.append("g").attr("class", "x axis")
+                                        .attr("transform", "translate("+(margins.left)+","+(margins.top + chartHeight)+")")
+                                        .call(bottomAxis);
+                annotated.append("g").attr("class", "x gridlines")
+                                        .attr("transform", "translate("+(margins.left)+","+(margins.top + chartHeight)+")")
+                                        .call(bottomGridLines);
 
                 //append to chart
-                let rects = svg.selectAll("rect").data(lifedata)
-                    .enter()
-                    .append("rect")
+                chartArea.selectAll("rect").data(lifedata)
+                    .join("rect")
                     .attr("x", xScale(0))
                     .attr("y", function(d) { return yScale(d.Category); })
                     .attr("width", function(d) { return xScale(d.Percentage); })
                     .attr("height", yScale.bandwidth() )
                     .attr("fill", function(d) {return colorGiver(d.Category);})
             });
-            
-            
-            
-            //xScale and yScale
-            
-        
-            // Show Circles function
-             
+
             </script>
         </p>
 
-
-
-
-
-
-
-
-
         <script>
-            const margins = {"top": 50, "right": 20, "bottom": 20, "left": 20}
             //graph area for life factors graph
             let life_factors = d3.select("body").append("svg")
                                     .attr("width", 800)
-                                    .attr("height", 500);
-            
-        // get life factors info
+                                    .attr("height", 800);
+
+            // get life factors info
+            d3.json("health_factors.json", d3.autoType).then((data) => {
 
 
 
-
-
-
-
-                
-            // //graph area for health factors graph
-            // let health_factors = d3.select("body").append("svg")
-            //                             .attr("width", 800)
-            //                             .attr("height", 500);
-        
-            // d3.json("life_factors.json").then((data) => {
-            //     console.log(data);
-
-                //make scales and graph for life factors here
-                
-            // });
+           });
         </script>
     </body>
 </html>
