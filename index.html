@@ -6,11 +6,11 @@
         <script src="https:d3js.org/d3.v6.min.js"></script>
     </head>
     <body>
+        <h1>Prevalence in strokes for some risk factors</h1>
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
-        <p>
-            <svg id="lifefactors" height="800" width="1000">
 
-            </svg>
+        <p></p>
+            <svg id="lifefactors" height="500" width="1000"></svg>
 
             <script>
 
@@ -23,78 +23,70 @@
             const chartWidth = width - margins.left - margins.right;
             const chartHeight = height - margins.top - margins.bottom;
 
-            let annotated = svg.append("g").attr("id","price");
-
-            let chartArea = svg.append("g").attr("id","points")
+            let annotated = svg.append("g");
+            let chartArea = svg.append("g")
                             .attr("transform","translate("+margins.left+","+margins.top+")");
 
             var lifedata;
-            d3.json("life_factors_new.json", d3.autoType).then((data) => {
+            d3.json("life_factors.json", d3.autoType).then((data) => {
                 lifedata = data;
-
                 //Make bar scales
                 // x is stroke or not - 0 or 1
-                // const xaxisExtent = d3.extent(lifedata, d => d["stroke"]);
-                const xScale = d3.scaleLinear().domain([0, 5]).range([0, chartWidth]);
-
-                //y scale is the number of bars we're making evenly distributed over the area of the chart
-                const yScale = d3.scaleBand().domain(lifedata.map(function(d) {console.log(d.Category);   return d.Category;})).range([chartHeight, 0]).padding([0.05]);
-
+                //y scale is the number of bars we're making evenly distributed over the area of the chart in groups by category
+                
+                let Lgroups = Array.from(new Set(Object.values(data).map(d => d.category)));
+                let Lsubgroups = Array.from(new Set(Object.values(data).map(d => d.subcategory)));
+                
+                let xScale = d3.scaleLinear().domain([0,5]).range([0, chartWidth]);
+                let yScale = d3.scaleBand().domain(Lgroups).range([chartHeight, 0]).padding([0.05]);
+                //let ySubgroupL = d3.scaleBand().domain(Lsubgroups)
+                                //  .range([0, yScale.bandwidth()])
+                                  //.padding([0.01]);
+                function findySubgroup(d){
+                    let sg = findSubgroups(d.category);
+                    let ySubgroupL = d3.scaleBand().domain(sg)
+                                  .range([0, yScale.bandwidth()])
+                                  .padding([0.01]);
+                    return ySubgroupL(d.subcategory);
+                }
+                function findSubgroups(category){
+                    return Array.from(new Set(Object.values(data).map(function(d){ 
+                        if (category == d.category){return d.subcategory}})));
+ 
+                }
+                function findBandwidth(d){
+                    let sg = findSubgroups(d.category);
+                    let bandwidth = d3.scaleBand().domain(sg)
+                                  .range([0, yScale.bandwidth()])
+                                  .padding([0.01]).bandwidth();
+                    return bandwidth;
+                }
 
                 //conditional color scales - 3 main categories -
-                // const colScale = d3.interpolate(colorGiver(category))
 
-                function colorGiver(category){
-                    // if it is a residence type, set color based on type. index first letter and last letter to decide
-                    if(String(category).charAt(0) == "R"){
-                        if(String(category).charAt(String(category).length-1) == "n"){
-                            return d3.interpolatePurples(0.75)
-                        }
-                        else{
-                            return d3.interpolatePurples(1)
-                        }
-
-                    }
-                    // if it is ever married, set the kinds and their colors. index first letter and last letter to decide
-                    if (String(category).charAt(0) == "e"){
-                        if(String(category).charAt(String(category).length-1) == "o"){
-                            return d3.interpolateReds(0.75)
-                        }
-                        else{
-                            return d3.interpolateReds(1)
-                        }
-
-                    }
-                    //if it is a work type, there are 5 different kinds so set the blue based on which one it is. Indexing on first and last letter to figure out which type
-                    if (String(category).charAt(0) == "w"){
-
-                        if(String(category).charAt(String(category).length-1) == "e"){
-                            return d3.interpolateBlues(1)
-                        }
-
-                        if(String(category).charAt(String(category).length-1) == "d"){
-                            return d3.interpolateBlues(0.8)
-                        }
-
-                        if(String(category).charAt(String(category).length-1) == "b"){
-                            return d3.interpolateBlues(0.6)
-                        }
-
-                        if(String(category).charAt(String(category).length-1) == "n"){
-                            return d3.interpolateBlues(0.4)
-                        }
-                        else{
-                            return d3.interpolateBlues(0.2)
-                        }
+                function colorGiver(d){
+                    let cat = String(d.category).charAt(0);
+                    let sub = String(d.subcategory).charAt(0);
+                    let intensity = {P: .2, S: .4, G: .6, c: .8, N: .8, Y: 0.5, U: 0.5, R: .8}
+                    if(cat == "R"){
+                        console.log(sub)
+                        return d3.interpolateGreens(intensity[sub]);
+                    }else if(cat == "e"){
+                        return d3.interpolateBlues(intensity[sub]);
+                    }else{
+                        return d3.interpolatePurples(intensity[sub]);
                     }
 
                 }
 
                 //axes append
-                let leftAxis = d3.axisLeft(yScale).tickFormat( tick => tick.charAt(0).toUpperCase() + tick.slice(1).replace(/_/g, " "));
+                let leftAxis = d3.axisLeft(yScale)
+                    .tickFormat( tick => tick.charAt(0).toUpperCase() + tick.slice(1).replace(/_/g, " "));
+
                 annotated.append("g").attr("class", "y axis")
                                         .attr("transform", "translate("+(margins.left)+","+(margins.top)+")")
                                         .call(leftAxis);
+                //leftAxis.selectAll("text").attr("transform", "rotate(-90)");
 
                 let bottomAxis = d3.axisBottom(xScale);
                 let bottomGridLines = d3.axisBottom(xScale).tickFormat("").tickSize(-chartHeight);
@@ -106,19 +98,32 @@
                                         .call(bottomGridLines);
 
                 //append to chart
-                chartArea.selectAll("rect").data(lifedata)
-                    .join("rect")
-                    .attr("x", xScale(0))
-                    .attr("y", function(d) { return yScale(d.Category); })
-                    .attr("width", function(d) { return xScale(d.Percentage); })
-                    .attr("height", yScale.bandwidth() )
-                    .attr("fill", function(d) {return colorGiver(d.Category);})
+                const groupEnterL = chartArea.selectAll("g").data(Lgroups)
+                     .enter()
+                     .append("g")
+                     .attr("transform", d => `translate(0, ${yScale(d)})`)
+                     .selectAll("rect")
+                     .data(d => Object.values(lifedata).filter(e => e.category === d))
+                     .enter();
+                     
+
+                groupEnterL.append("rect")
+                     .lower()
+                     .attr("x", xScale(0))
+                     .attr("y", d => findySubgroup(d))
+                     .attr("width", d => xScale(d.percentage))
+                     .attr("height", d => findBandwidth(d))
+                     .attr("fill", d => colorGiver(d));
+
+                groupEnterL.append("text")
+                    .text(d => d.subcategory+": "+d.percentage.toFixed(2)+"%")
+                    .attr("x", 10)
+                    .attr("y", d => findySubgroup(d) + findBandwidth(d)/2 + 7)
+                    .attr("fill", "black");
             });
 
             </script>
-        </p>
 
-        <p>
           <svg id="healthfactors" height="900" width="1000"></svg>
           <script>
               //graph area for health factors graph
@@ -126,11 +131,12 @@
 
               const widthH = svghealth.attr("width");
               const heightH = svghealth.attr("height");
+              
               const marginsH = {"top": 50, "right": 20, "bottom": 100, "left": 150};
 
               const chartWidthH = widthH - marginsH.left - marginsH.right;
               const chartHeightH = heightH - marginsH.top - marginsH.bottom;
-
+              
               let annotations = svghealth.append("g");
               let chart = svghealth.append("g").attr("transform","translate("+marginsH.left+","+marginsH.top+")");
 
@@ -140,7 +146,7 @@
                 let groups = Array.from(new Set(Object.values(data).map(d => d.risk_factor)));
                 let subgroups = Array.from(new Set(Object.values(data).map(d => d.gender))).slice(0,2);
 
-                let xScaleH = d3.scaleLinear().domain([0,127]).range([0, chartWidthH]);
+                let xScaleH = d3.scaleLinear().domain([0,20]).range([0, chartWidthH]);
                 let yScaleH = d3.scaleBand().domain(groups).range([chartHeightH, 0]).padding([0.05]);
                 let ySubgroup = d3.scaleBand()
                                   .domain(subgroups)
@@ -148,7 +154,7 @@
                                   .padding([0.03]);
 
                 let bottomAxisH = d3.axisBottom(xScaleH);
-                let bottomGridLinesH = d3.axisBottom(xScaleH).tickFormat("").tickSize(-chartHeight);
+                let bottomGridLinesH = d3.axisBottom(xScaleH).tickFormat("").tickSize(-chartHeightH);
                 annotations.append("g").attr("class", "x axis")
                                        .attr("transform", "translate("+(marginsH.left)+","+(marginsH.top + chartHeightH)+")")
                                        .raise()
@@ -175,7 +181,7 @@
                      .lower()
                      .attr("x", xScaleH(0))
                      .attr("y", d => ySubgroup(d.gender))
-                     .attr("width", d => xScaleH(d.strokes))
+                     .attr("width", d => xScaleH(d.percentage))
                      .attr("height", d => ySubgroup.bandwidth())
                      .attr("fill", d => {
                                    if(d.gender === "Male"){
@@ -188,7 +194,7 @@
                            )
 
                 groupEnter.append("text")
-                          .text(d => d.strokes)
+                          .text(d => d.percentage.toFixed(2)+"%")
                           .attr("x", 10)
                           .attr("y", d => ySubgroup(d.gender) + ySubgroup.bandwidth()/2 + 7)
                           .attr("fill", "white")
@@ -202,7 +208,7 @@
                          .attr("y", heightH/2)
 
                 svghealth.append("text")
-                        .text("Number of Strokes")
+                        .text("Percentage of Strokes")
                         .attr("x", widthH/2)
                         .attr("y", 850)
 
@@ -214,6 +220,5 @@
 
               });
         </script>
-      </p>
     </body>
 </html>
