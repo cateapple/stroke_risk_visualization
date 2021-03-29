@@ -13,8 +13,8 @@ for j in factors:
     for i in strokes[j].unique():
         total_strokes = len(strokes[strokes[j] == i][strokes.stroke == 1])
         stroke_percentage = total_strokes*100/total
-        stats = pd.DataFrame([[total_strokes],[stroke_percentage]],
-                             index=['strokes','percentage'], columns=[j+': '+i])
+        stats = pd.DataFrame([[j],[i],[total_strokes],[stroke_percentage]],
+                             index=['category','subcategory','strokes','percentage'], columns=[j+': '+i])
         life_factors = pd.concat([life_factors, stats], axis=1)
 
 life_factors.to_json('life_factors.json')
@@ -32,8 +32,8 @@ def concat_stats(total, label, health_factors):
     
 h_factors = ['heart_disease', 'avg_glucose_level']
 health_factors =  pd.DataFrame([],columns=[])
-
-for g in strokes['gender'].unique():
+genders = ['Male', 'Female']
+for g in genders:
     gender_data = strokes[strokes['gender'] == g]
     # age over 50
     total = gender_data[gender_data['age'] >= 50]
