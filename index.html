@@ -31,7 +31,7 @@
             //promise function for life_factors
             d3.json("life_factors.json", d3.autoType).then((data) => {
 
-                //conditional color scales - 3 main categories -
+                //decides colors for each bar. Colors vary by hue over 3 categories and intensity over sub categories
                 function colorGiver(d){
                     let cat = String(d.category).charAt(0);
                     let sub = String(d.subcategory).charAt(0);
@@ -97,19 +97,13 @@
                         .attr("stroke", "black")
                 }
 
-
-                //Make bar scales
-                // x is stroke or not - 0 or 1
-                //y scale is the number of bars we're making evenly distributed over the area of the chart in groups by category
-
+                //lists of categories and subcategories:
                 let Lgroups = Array.from(new Set(Object.values(data).map(d => d.category)));
                 let Lsubgroups = Array.from(new Set(Object.values(data).map(d => d.subcategory)));
 
+                //scales
                 let xScale = d3.scaleLinear().domain([0,5]).range([0, chartWidth]);
                 let yScale = d3.scaleBand().domain(Lsubgroups).range([chartHeight, 0]).padding([0.03]);
-                //let ySubgroupL = d3.scaleBand().domain(Lsubgroups)
-                                //  .range([0, yScale.bandwidth()])
-                                //.padding([0.01]);
 
                 //make left axis and ticks
                 let leftAxis = d3.axisLeft(yScale)
@@ -130,7 +124,7 @@
                                         .attr("transform", "translate("+(margins.left)+","+(margins.top + chartHeight)+")")
                                         .call(bottomGridLines);
 
-                //put bars onto graph and label them
+                //put bars onto graph
                 Object.values(data).forEach(d => {
                     
                     chartArea.append("rect")
@@ -139,7 +133,7 @@
                             .attr("width", xScale(d.percentage))
                             .attr("height", yScale.bandwidth())
                             .attr("fill", colorGiver(d));
-
+                    //label bars
                     svg.append("text")
                             .text(d.percentage.toFixed(2)+"%")
                             .attr("x", margins.left+10)
