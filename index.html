@@ -10,7 +10,7 @@
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
 
         <p></p>
-            <svg id="lifefactors" height="500" width="1000"></svg>
+            <svg id="lifefactors" height="750" width="1000"></svg>
 
             <script>
 
@@ -18,7 +18,7 @@
 
             const width = svg.attr("width");
             const height = svg.attr("height");
-            const margins = {"top": 50, "right": 20, "bottom": 20, "left": 150};
+            const margins = {"top": 50, "right": 20, "bottom": 100, "left": 150};
 
             const chartWidth = width - margins.left - margins.right;
             const chartHeight = height - margins.top - margins.bottom;
@@ -33,12 +33,12 @@
                 //Make bar scales
                 // x is stroke or not - 0 or 1
                 //y scale is the number of bars we're making evenly distributed over the area of the chart in groups by category
-                
+
                 let Lgroups = Array.from(new Set(Object.values(data).map(d => d.category)));
                 let Lsubgroups = Array.from(new Set(Object.values(data).map(d => d.subcategory)));
-                
+
                 let xScale = d3.scaleLinear().domain([0,5]).range([0, chartWidth]);
-                let yScale = d3.scaleBand().domain(Lgroups).range([chartHeight, 0]).padding([0.05]);
+                let yScale = d3.scaleBand().domain(Lgroups).range([chartHeight, 0]).padding([0.01]);
                 //let ySubgroupL = d3.scaleBand().domain(Lsubgroups)
                                 //  .range([0, yScale.bandwidth()])
                                   //.padding([0.01]);
@@ -50,15 +50,15 @@
                     return ySubgroupL(d.subcategory);
                 }
                 function findSubgroups(category){
-                    return Array.from(new Set(Object.values(data).map(function(d){ 
+                    return Array.from(new Set(Object.values(data).map(function(d){
                         if (category == d.category){return d.subcategory}})));
- 
+
                 }
                 function findBandwidth(d){
                     let sg = findSubgroups(d.category);
                     let bandwidth = d3.scaleBand().domain(sg)
                                   .range([0, yScale.bandwidth()])
-                                  .padding([0.01]).bandwidth();
+                                  .padding([0.05]).bandwidth();
                     return bandwidth;
                 }
 
@@ -105,7 +105,7 @@
                      .selectAll("rect")
                      .data(d => Object.values(lifedata).filter(e => e.category === d))
                      .enter();
-                     
+
 
                 groupEnterL.append("rect")
                      .lower()
@@ -120,6 +120,19 @@
                     .attr("x", 10)
                     .attr("y", d => findySubgroup(d) + findBandwidth(d)/2 + 7)
                     .attr("fill", "black");
+
+                svg.append("text")
+                   .text("Life Factors")
+                   .attr("transform", `rotate(270,50,${height/2})`)
+                   .attr("text-anchor", "middle")
+                   .attr("x", 50)
+                   .attr("y", height/2)
+
+                svg.append("text")
+                  .text("Percentage of Strokes")
+                  .attr("x", width/2)
+                  .attr("y", 700)
+
             });
 
             </script>
@@ -131,12 +144,12 @@
 
               const widthH = svghealth.attr("width");
               const heightH = svghealth.attr("height");
-              
+
               const marginsH = {"top": 50, "right": 20, "bottom": 100, "left": 150};
 
               const chartWidthH = widthH - marginsH.left - marginsH.right;
               const chartHeightH = heightH - marginsH.top - marginsH.bottom;
-              
+
               let annotations = svghealth.append("g");
               let chart = svghealth.append("g").attr("transform","translate("+marginsH.left+","+marginsH.top+")");
 
