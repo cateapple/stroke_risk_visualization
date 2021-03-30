@@ -160,7 +160,6 @@
           <script>
               //graph area for health factors graph
               const svghealth = d3.select("svg#healthfactors");
-
               const widthH = svghealth.attr("width");
               const heightH = svghealth.attr("height");
 
@@ -168,16 +167,20 @@
 
               const chartWidthH = widthH - marginsH.left - marginsH.right;
               const chartHeightH = heightH - marginsH.top - marginsH.bottom;
-
+              
+              //Add groupings for area
               let annotations = svghealth.append("g");
               let chart = svghealth.append("g").attr("transform","translate("+marginsH.left+","+marginsH.top+")");
 
+              //begin enter
               d3.json("health_factors.json", d3.autoType).then((data) => {
                 console.log(Object.values(data));
 
+                //define subgroups for y scales
                 let groups = Array.from(new Set(Object.values(data).map(d => d.risk_factor)));
                 let subgroups = Array.from(new Set(Object.values(data).map(d => d.gender))).slice(0,2);
 
+                //create scales, inclduing the two for the y groupings
                 let xScaleH = d3.scaleLinear().domain([0,20]).range([0, chartWidthH]);
                 let yScaleH = d3.scaleBand().domain(groups).range([chartHeightH, 0]).padding([0.05]);
                 let ySubgroup = d3.scaleBand()
@@ -185,6 +188,7 @@
                                   .range([0, yScaleH.bandwidth()])
                                   .padding([0.03]);
 
+                //create axes
                 let bottomAxisH = d3.axisBottom(xScaleH);
                 let bottomGridLinesH = d3.axisBottom(xScaleH).tickFormat("").tickSize(-chartHeightH);
                 annotations.append("g").attr("class", "x axis")
@@ -201,6 +205,7 @@
                                        .raise()
                                        .call(leftAxisH);
 
+                //begin data join. broken up to allow joining of both text and rectangles
                 const groupEnter = chart.selectAll("g").data(groups)
                      .enter()
                      .append("g")
@@ -225,6 +230,7 @@
                                  }
                            )
 
+                //add descriptor text
                 groupEnter.append("text")
                           .text(d => d.percentage.toFixed(2)+"%")
                           .attr("x", 10)
@@ -244,6 +250,8 @@
                         .attr("x", widthH/2)
                         .attr("y", 700)
 
+                
+                //append legend
                 svghealth.append("circle").attr("cx",900).attr("cy",80).attr("r", 8).style("fill", d3.interpolateBlues(0.8))
                 svghealth.append("circle").attr("cx",900).attr("cy",110).attr("r", 8).style("fill", d3.interpolateReds(0.75))
                 svghealth.append("text").attr("x", 920).attr("y", 85).text("Male").style("font-size", "15px").attr("alignment-baseline","middle")
@@ -252,5 +260,4 @@
 
               });
         </script>
-        </div>
 </html>
