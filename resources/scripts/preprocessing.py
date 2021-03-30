@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-strokes = pd.read_csv('./healthcare-dataset-stroke-data.csv')
+strokes = pd.read_csv('healthcare-dataset-stroke-data.csv')
 
 features = ['Residence_type', 'stroke']
 total = len(strokes)
