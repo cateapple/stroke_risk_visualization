@@ -2,15 +2,18 @@
     <head>
         <meta charset="UTF-8">
         <title>Stroke risk factor visualizations</title>
-        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="strokes.css">
         <script src="https:d3js.org/d3.v6.min.js"></script>
     </head>
     <body>
-        <h1>Prevalence of strokes for some risk factors</h1>
+        <h1>Prevalence of strokes</h1>
         <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
-
-        <p></p>
-            <svg id="lifefactors" height="750" width="1000"></svg>
+        <p>Would you get married if doing so would increase your chance of a stroke? When choosing between a corporate career or a government career, 
+            are you considering how each affects your health, beyond salary and benefits? While we can't predict how each decision does impact your health
+            or chance of a stroke, we can see how many people get strokes after having lived in each of these scenarios.</p>
+           
+        <h3>Graph 1: Vizualizing stroke prevalence for life decisions and environmental factors </h3>
+         <svg id="lifefactors" height="750" width="1000"></svg>
 
             <script>
 
@@ -146,7 +149,13 @@
             });
 
             </script>
-
+        <p> So, you've looked at the graph above and see that less than 4% more people experienced a stroke having been married than not. 
+            Knowing that your choice of occupation, marriage, and the environment you chose to live in isn't correlated with an increased
+            chance of stroke may be relieving, but you need something to worry about. Luckily, we can see below, with health risk factors 
+            that often one can't control, we see higher prevalence of strokes. So, rather than worrying about how your job affects your 
+            chance of a stroke, you should be worrying about your blood pressure.
+        </p>
+        <h3>Graph 2: Vizualizing stroke prevalence by gender for health risk factors</h3>
           <svg id="healthfactors" height="750" width="1000"></svg>
           <script>
               //graph area for health factors graph
@@ -243,5 +252,5 @@
 
               });
         </script>
-    </body>
+        </div>
 </html>

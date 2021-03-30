@@ -1,0 +1,38 @@
+body {
+
+  margin: 0;
+  border-width: 0px;
+  padding: 10%;
+
+}
+html, body {
+  margin: 0; 
+  border-width: 0px;
+} 
+
+p{
+  font-family: Helvetica, sans-serif;
+  font-weight: lighter;
+}
+
+text{
+  font-family: sans-serif;
+}
+
+h1, h3 {
+font-family: Helvetica, sans-serif;
+font-weight: lighter;
+}
+
+.gridlines line{
+  stroke: lightgrey;
+}
+
+.gridlines .domain{
+  stroke: none;
+}
+
+.axis{
+  font-size: 10px;
+}
+
