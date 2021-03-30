@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', _ => {
   const chartHeightH = heightH - marginsH.top - marginsH.bottom;
   let annotations = svghealth.append("g");
   let chart = svghealth.append("g").attr("transform", "translate(" + marginsH.left + "," + marginsH.top + ")");
-  d3.json("resources/data/health_factors.json", d3.autoType).then((data) => {
+  d3.json("./health_factors.json", d3.autoType).then((data) => {
     let groups = Array.from(new Set(Object.values(data).map(d => d.risk_factor)));
     let subgroups = Array.from(new Set(Object.values(data).map(d => d.gender))).slice(0, 2);
     let xScaleH = d3.scaleLinear().domain([0, 20]).range([0, chartWidthH]);

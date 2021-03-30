@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', _ => {
 
       var lifedata;
       //promise function for life_factors
-      d3.json("resources/data/life_factors.json", d3.autoType).then((data) => {
+      d3.json("./life_factors.json", d3.autoType).then((data) => {
 
         //decides colors for each bar. Colors vary by hue over 3 categories and intensity over sub categories
         function colorGiver(d) {
