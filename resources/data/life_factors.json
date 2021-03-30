@@ -1,0 +1,56 @@
+{
+   "Residence_type: Urban":{
+      "category":"Residence_type",
+      "subcategory":"Urban",
+      "strokes":135,
+      "percentage":2.6418786693
+   },
+   "Residence_type: Rural":{
+      "category":"Residence_type",
+      "subcategory":"Rural",
+      "strokes":114,
+      "percentage":2.2309197652
+   },
+   "ever_married: Yes":{
+      "category":"ever_married",
+      "subcategory":"Yes",
+      "strokes":220,
+      "percentage":4.3052837573
+   },
+   "ever_married: No":{
+      "category":"ever_married",
+      "subcategory":"No",
+      "strokes":29,
+      "percentage":0.5675146771
+   },
+   "work_type: Private":{
+      "category":"work_type",
+      "subcategory":"Private",
+      "strokes":149,
+      "percentage":2.915851272
+   },
+   "work_type: Self-employed":{
+      "category":"work_type",
+      "subcategory":"Self-employed",
+      "strokes":65,
+      "percentage":1.2720156556
+   },
+   "work_type: Govt_job":{
+      "category":"work_type",
+      "subcategory":"Govt_job",
+      "strokes":33,
+      "percentage":0.6457925636
+   },
+   "work_type: children":{
+      "category":"work_type",
+      "subcategory":"children",
+      "strokes":2,
+      "percentage":0.0391389432
+   },
+   "work_type: Never_worked":{
+      "category":"work_type",
+      "subcategory":"Never_worked",
+      "strokes":0,
+      "percentage":0.0
+   }
+}

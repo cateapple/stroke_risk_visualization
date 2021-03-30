@@ -1,5 +1,5 @@
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
 
 
 strokes = pd.read_csv('healthcare-dataset-stroke-data.csv')
@@ -29,7 +29,7 @@ def concat_stats(total, label, health_factors):
     stats = pd.DataFrame([[label],[g],[total_strokes],[stroke_percentage]],
                              index=['risk_factor','gender','strokes','percentage'], columns=[g+"_"+label])
     return pd.concat([health_factors, stats], axis=1)
-    
+
 h_factors = ['heart_disease', 'avg_glucose_level']
 health_factors =  pd.DataFrame([],columns=[])
 genders = ['Male', 'Female']

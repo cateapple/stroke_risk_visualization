@@ -1,263 +1,36 @@
+<!doctype html>
+
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Stroke risk factor visualizations</title>
-        <link rel="stylesheet" type="text/css" href="strokes.css">
-        <script src="https:d3js.org/d3.v6.min.js"></script>
-    </head>
-    <body>
-        <h1>Prevalence of strokes</h1>
-        <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
-        <p>Would you get married if doing so would increase your chance of a stroke? When choosing between a corporate career or a government career, 
-            are you considering how each affects your health, beyond salary and benefits? While we can't predict how each decision does impact your health
-            or chance of a stroke, we can see how many people get strokes after having lived in each of these scenarios.</p>
-           
-        <h3>Graph 1: Vizualizing stroke prevalence for life decisions and environmental factors </h3>
-         <svg id="lifefactors" height="750" width="1000"></svg>
+  <head>
+    <meta charset="UTF-8">
+    <title>Stroke risk factor visualizations</title>
+    <link rel="stylesheet" type="text/css" href="strokes.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="resources/scripts/graph1.js"></script>
+    <script src="resources/scripts/graph2.js"></script>
+  </head>
 
-            <script>
+  <body>
+    <h1>Prevalence of strokes</h1>
+    <h3>Catherine Appleby (caa96), Esuvat Bomani (ekb72), Mia Bravo (mvb43)</h3>
+    <p>Would you get married if doing so would increase your chance of a stroke? When choosing between a corporate career or a government career,
+      are you considering how each affects your health, beyond salary and benefits? While we can't predict how each decision does impact your health
+      or chance of a stroke, we can see how many people get strokes after having lived in each of these scenarios.
+    </p>
+    
+    <h3>Graph 1: Vizualizing stroke prevalence for life decisions and environmental factors </h3>
+    <svg id="lifefactors" height="750" width="1000"></svg>
 
-            const svg = d3.select("svg#lifefactors");
+    <p> So, you've looked at the graph above and see that less than 4% more people experienced a stroke having been married than not.
+      Knowing that your choice of occupation, marriage, and the environment you chose to live in isn't correlated with an increased
+      chance of stroke may be relieving, but you need something to worry about. Luckily, we can see below, with health risk factors
+      that often one can't control, we see higher prevalence of strokes. So, rather than worrying about how your job affects your
+      chance of a stroke, you should be worrying about your blood pressure.
+    </p>
 
-            const width = svg.attr("width");
-            const height = svg.attr("height");
-            const margins = {"top": 50, "right": 20, "bottom": 100, "left": 150};
+    <h3>Graph 2: Vizualizing stroke prevalence by gender for health risk factors</h3>
+    <svg id="healthfactors" height="750" width="1000"></svg>
 
-            const chartWidth = width - margins.left - margins.right;
-            const chartHeight = height - margins.top - margins.bottom;
+  </body>
 
-            let annotated = svg.append("g");
-            let chartArea = svg.append("g")
-                            .attr("transform","translate("+margins.left+","+margins.top+")");
-
-            var lifedata;
-            //promise function for life_factors
-            d3.json("life_factors.json", d3.autoType).then((data) => {
-
-                //decides colors for each bar. Colors vary by hue over 3 categories and intensity over sub categories
-                function colorGiver(d){
-                    let cat = String(d.category).charAt(0);
-                    let sub = String(d.subcategory).charAt(0);
-                    let intensity = {P: .2, S: .4, G: .6, c: .8, N: .8, Y: 0.5, U: 0.5, R: .8}
-                    if(cat == "R"){
-                        return d3.interpolateGreens(intensity[sub]);
-                    }else if(cat == "e"){
-                        return d3.interpolateBlues(intensity[sub]);
-                    }else{
-                        return d3.interpolatePurples(intensity[sub]);
-                    }
-
-                }
-
-                //labels for graph
-                function labelGraph(){
-
-                    svg.append("text")
-                        .text("Life Factors")
-                        .attr("transform", `rotate(270,50,${height/2})`)
-                        .attr("text-anchor", "middle")
-                        .attr("x", 50)
-                        .attr("y", height/2-5)
-
-                    svg.append("text")
-                        .text("Percentage of Strokes")
-                        .attr("x", width/2)
-                        .attr("y", 700)
-                    
-                    svg.append("text")
-                        .text("Residence type")
-                        .attr("fill", "grey")
-                        .attr("transform", "rotate(-90, 20, 50)")
-                        .attr("x", -570)
-                        .attr("y", 100)
-                    
-                    svg.append("text")
-                        .text("Ever Married?")
-                        .attr("fill", "grey")
-                        .attr("transform", "rotate(-90, 20, 50)")
-                        .attr("x", -430)
-                        .attr("y", 100)
-
-                    svg.append("text")
-                        .text("Occupation")
-                        .attr("fill", "grey")
-                        .attr("transform", "rotate(-90, 20, 50)")
-                        .attr("x", -180)
-                        .attr("y", 100)
-
-                    svg.append("line")
-                        .attr("x1", margins.left-88)
-                        .attr("x2", margins.left)
-                        .attr("y1", yScale("Rural")+margins.top)
-                        .attr("y2", yScale("Rural")+margins.top)
-                        .attr("stroke", "black")
-
-                    svg.append("line")
-                        .attr("x1", margins.left-90)
-                        .attr("x2", margins.left)
-                        .attr("y1", yScale("No")+margins.top)
-                        .attr("y2", yScale("No")+margins.top)
-                        .attr("stroke", "black")
-                }
-
-                //lists of categories and subcategories:
-                let Lgroups = Array.from(new Set(Object.values(data).map(d => d.category)));
-                let Lsubgroups = Array.from(new Set(Object.values(data).map(d => d.subcategory)));
-
-                //scales
-                let xScale = d3.scaleLinear().domain([0,5]).range([0, chartWidth]);
-                let yScale = d3.scaleBand().domain(Lsubgroups).range([chartHeight, 0]).padding([0.03]);
-
-                //make left axis and ticks
-                let leftAxis = d3.axisLeft(yScale)
-                    .tickFormat( tick => tick.charAt(0).toUpperCase() + tick.slice(1).replace(/_/g, " "));
-
-                annotated.append("g").attr("class", "y axis")
-                                        .attr("transform", "translate("+(margins.left-5)+","+(margins.top)+")")
-                                        .call(leftAxis);
-
-
-                //make bottom axis and ticks
-                let bottomAxis = d3.axisBottom(xScale);
-                let bottomGridLines = d3.axisBottom(xScale).tickFormat("").tickSize(-chartHeight);
-                annotated.append("g").attr("class", "x axis")
-                                        .attr("transform", "translate("+(margins.left)+","+(margins.top + chartHeight)+")")
-                                        .call(bottomAxis);
-                annotated.append("g").attr("class", "x gridlines")
-                                        .attr("transform", "translate("+(margins.left)+","+(margins.top + chartHeight)+")")
-                                        .call(bottomGridLines);
-
-                //put bars onto graph
-                Object.values(data).forEach(d => {
-                    
-                    chartArea.append("rect")
-                            .attr("x", xScale(0))
-                            .attr("y", yScale(d.subcategory))
-                            .attr("width", xScale(d.percentage))
-                            .attr("height", yScale.bandwidth())
-                            .attr("fill", colorGiver(d));
-                    //label bars
-                    svg.append("text")
-                            .text(d.percentage.toFixed(2)+"%")
-                            .attr("x", margins.left+10)
-                            .attr("y", yScale(d.subcategory)+margins.top+yScale.bandwidth()/2+5)
-                            .attr("fill", "black");
-                });
-
-                labelGraph();
-
-            });
-
-            </script>
-        <p> So, you've looked at the graph above and see that less than 4% more people experienced a stroke having been married than not. 
-            Knowing that your choice of occupation, marriage, and the environment you chose to live in isn't correlated with an increased
-            chance of stroke may be relieving, but you need something to worry about. Luckily, we can see below, with health risk factors 
-            that often one can't control, we see higher prevalence of strokes. So, rather than worrying about how your job affects your 
-            chance of a stroke, you should be worrying about your blood pressure.
-        </p>
-        <h3>Graph 2: Vizualizing stroke prevalence by gender for health risk factors</h3>
-          <svg id="healthfactors" height="750" width="1000"></svg>
-          <script>
-              //graph area for health factors graph
-              const svghealth = d3.select("svg#healthfactors");
-              const widthH = svghealth.attr("width");
-              const heightH = svghealth.attr("height");
-
-              const marginsH = {"top": 50, "right": 20, "bottom": 100, "left": 150};
-
-              const chartWidthH = widthH - marginsH.left - marginsH.right;
-              const chartHeightH = heightH - marginsH.top - marginsH.bottom;
-              
-              //Add groupings for area
-              let annotations = svghealth.append("g");
-              let chart = svghealth.append("g").attr("transform","translate("+marginsH.left+","+marginsH.top+")");
-
-              //begin enter
-              d3.json("health_factors.json", d3.autoType).then((data) => {
-                console.log(Object.values(data));
-
-                //define subgroups for y scales
-                let groups = Array.from(new Set(Object.values(data).map(d => d.risk_factor)));
-                let subgroups = Array.from(new Set(Object.values(data).map(d => d.gender))).slice(0,2);
-
-                //create scales, inclduing the two for the y groupings
-                let xScaleH = d3.scaleLinear().domain([0,20]).range([0, chartWidthH]);
-                let yScaleH = d3.scaleBand().domain(groups).range([chartHeightH, 0]).padding([0.05]);
-                let ySubgroup = d3.scaleBand()
-                                  .domain(subgroups)
-                                  .range([0, yScaleH.bandwidth()])
-                                  .padding([0.03]);
-
-                //create axes
-                let bottomAxisH = d3.axisBottom(xScaleH);
-                let bottomGridLinesH = d3.axisBottom(xScaleH).tickFormat("").tickSize(-chartHeightH);
-                annotations.append("g").attr("class", "x axis")
-                                       .attr("transform", "translate("+(marginsH.left)+","+(marginsH.top + chartHeightH)+")")
-                                       .raise()
-                                       .call(bottomAxisH);
-                annotations.append("g").attr("class", "gridlines")
-                                       .attr("transform", "translate("+(marginsH.left)+","+(marginsH.top + chartHeightH)+")")
-                                       .call(bottomGridLinesH);
-
-                let leftAxisH = d3.axisLeft(yScaleH).tickFormat( tick => tick.charAt(0).toUpperCase() + tick.slice(1).replace(/_/g, " "));
-                annotations.append("g").attr("class", "y axis")
-                                       .attr("transform", "translate("+(marginsH.left)+","+(marginsH.top) +")")
-                                       .raise()
-                                       .call(leftAxisH);
-
-                //begin data join. broken up to allow joining of both text and rectangles
-                const groupEnter = chart.selectAll("g").data(groups)
-                     .enter()
-                     .append("g")
-                     .attr("transform", d => `translate(0, ${yScaleH(d)})`)
-                     .selectAll("rect")
-                     .data(d => Object.values(data).filter(e => e.risk_factor === d))
-                     .enter()
-
-                groupEnter.append("rect")
-                     .lower()
-                     .attr("x", xScaleH(0))
-                     .attr("y", d => ySubgroup(d.gender))
-                     .attr("width", d => xScaleH(d.percentage))
-                     .attr("height", d => ySubgroup.bandwidth())
-                     .attr("fill", d => {
-                                   if(d.gender === "Male"){
-                                     return d3.interpolateBlues(0.8);
-                                   }
-                                   if(d.gender === "Female"){
-                                     return d3.interpolateReds(0.75);
-                                   }
-                                 }
-                           )
-
-                //add descriptor text
-                groupEnter.append("text")
-                          .text(d => d.percentage.toFixed(2)+"%")
-                          .attr("x", 10)
-                          .attr("y", d => ySubgroup(d.gender) + ySubgroup.bandwidth()/2 + 7)
-                          .attr("fill", "white")
-
-
-                svghealth.append("text")
-                         .text("Health Factors")
-                         .attr("transform", `rotate(270,50,${heightH/2})`)
-                         .attr("text-anchor", "middle")
-                         .attr("x", 50)
-                         .attr("y", heightH/2)
-
-                svghealth.append("text")
-                        .text("Percentage of Strokes")
-                        .attr("x", widthH/2)
-                        .attr("y", 700)
-
-                
-                //append legend
-                svghealth.append("circle").attr("cx",900).attr("cy",80).attr("r", 8).style("fill", d3.interpolateBlues(0.8))
-                svghealth.append("circle").attr("cx",900).attr("cy",110).attr("r", 8).style("fill", d3.interpolateReds(0.75))
-                svghealth.append("text").attr("x", 920).attr("y", 85).text("Male").style("font-size", "15px").attr("alignment-baseline","middle")
-                svghealth.append("text").attr("x", 920).attr("y", 115).text("Female").style("font-size", "15px").attr("alignment-baseline","middle")
-
-
-              });
-        </script>
 </html>
